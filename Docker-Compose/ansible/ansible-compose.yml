@@ -1,0 +1,16 @@
+---
+version: "3"
+
+services:
+  ansible:
+    # build: .
+    image: python:3.9.7
+    command:
+      - "python3 -m pip install ansible"
+    container_name: ansible
+    tty: true
+    volumes:
+      - type: bind
+        source: /vagrant/.ssh/id_rsa
+        target: /root/.ssh/id_rsa
+

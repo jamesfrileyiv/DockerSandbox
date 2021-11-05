@@ -1,0 +1,8 @@
+---
+
+# Reference: 
+# https://github.com/elastic/logstash/blob/master/config/logstash.yml
+# https://www.elastic.co/guide/en/logstash/master/logstash-settings-file.html
+
+# leaving blank for now to load defaults
+

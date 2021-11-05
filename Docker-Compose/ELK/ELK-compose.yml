@@ -1,0 +1,91 @@
+---
+version: "3"
+
+services:
+  logstash:
+    build: ./Logstash
+    container_name: logstash
+    networks:
+      - elastic
+  elasticsearch01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0-alpha2
+    container_name: elasticsearch01
+    environment:
+      - node.name=elasticsearch01
+      - cluster.name=elasticluster
+      - discovery.seed_hosts=elasticsearch02, elasticsearch03
+      - cluster.initial_master_nodes=elasticsearch01, elasticsearch02, elasticsearch03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes: 
+      - es-data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+  elasticsearch02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0-alpha2
+    container_name: elasticsearch02
+    environment:
+      - node.name=elasticsearch02
+      - cluster.name=elasticluster
+      - discovery.seed_hosts=elasticsearch01, elasticsearch03
+      - cluster.initial_master_nodes=elasticsearch01, elasticsearch02, elasticsearch03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes: 
+      - es-data02:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+  elasticsearch03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0-alpha2
+    container_name: elasticsearch03
+    environment:
+      - node.name=elasticsearch03
+      - cluster.name=elasticluster
+      - discovery.seed_hosts=elasticsearch01, elasticsearch02
+      - cluster.initial_master_nodes=elasticsearch01, elasticsearch02, elasticsearch03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes: 
+      - es-data03:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.0.0-alpha2
+    container_name: kibana
+    environment: 
+      ELASTICSEARCH_URL: "http://elasticsearch01:9200"
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch01:9200", "http://elasticsearch02:9200", "http://elasticsearch03:9200"]'
+    ports:
+      - 5601:5601
+    networks:
+      - elastic
+
+volumes:
+  # ls-data01:
+  #   driver: local
+  es-data01:
+    driver: local
+  es-data02:
+    driver: local
+  es-data03:
+    driver: local
+  kb-data01:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge
