@@ -11,6 +11,6 @@ Vagrant.configure("2") do |config|
     docker.vm.network "forwarded_port", guest: 443, host: 4430    # web
     docker.vm.network "forwarded_port", guest: 9200, host: 9200   # elasticsearch
     docker.vm.network "forwarded_port", guest: 5601, host: 5601   # kibana
-    docker.vm.provision "shell", path: "../Scripts/install_docker.sh"
+    docker.vm.provision "shell", path: "scripts/install_docker.sh"
   end 
 end
